@@ -10,6 +10,14 @@
       }
     },
     {
+      "src": "/api/projects",
+      "dest": "https://api.scratch.mit.edu/studios/51707858/projects",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET"
+      }
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
