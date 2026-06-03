@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Murder drones Fans Website</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            text-align: center;
+            padding: 50px 20px;
+            margin: 0;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #ff8c00;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        button, a.btn {
+            background-color: #ff8c00;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+        }
+        button:hover, a.btn:hover {
+            background-color: #e07b00;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 140, 0, 0.5);
+        }
+        #managers-box {
+            display: none;
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #2a2a2a;
+            border: 2px solid #ff8c00;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        #managers-box h2 {
+            margin-top: 0;
+            color: #ff8c00;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+        .manager-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .manager-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            border-bottom: 1px solid #333;
+        }
+        .manager-item:last-child {
+            border-bottom: none;
+        }
+        .manager-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50px;
+            border: 2px solid #ff8c00;
+        }
+        .manager-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .loading {
+            color: #aaa;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>murder drones fans website</h1>
+
+    <div class="btn-container">
+        <button onclick="fetchManagers()">Managers</button>
+        <a href="https://scratch.mit.edu/studios/51707858/" target="_blank" class="btn">Scratch</a>
+    </div>
+
+    <div id="managers-box">
+        <h2>Studio Managers</h2>
+        <div id="box-content"></div>
+    </div>
+
+    <script>
+        async function fetchManagers() {
+            const box = document.getElementById('managers-box');
+            const content = document.getElementById('box-content');
+            
+            box.style.display = 'block';
+            content.innerHTML = '<p class="loading">Loading managers...</p>';
+
+            try {
+                // Vercel.json proxy endpoint
+                const response = await fetch('/api/scratch');
+                
+                if (!response.ok) {
+                    throw new Error('API Error');
+                }
+
+                const curators = await response.json();
+                const managers = curators.filter(user => user.is_manager === true);
+
+                if (managers.length === 0) {
+                    content.innerHTML = '<p>No managers found.</p>';
+                    return;
+                }
+
+                let listHtml = '<ul class="manager-list">';
+                managers.forEach(manager => {
+                    listHtml += `
+                        <li class="manager-item">
+                            <img class="manager-avatar" src="${manager.profile.images['90x90']}" alt="${manager.username}">
+                            <span class="manager-name">${manager.username}</span>
+                        </li>
+                    `;
+                });
+                listHtml += '</ul>';
+
+                content.innerHTML = listHtml;
+
+            } catch (error) {
+                console.error(error);
+                content.innerHTML = '<p style="color: #ff4444;">Failed to load managers.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
